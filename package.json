@@ -1,0 +1,26 @@
+{
+  "name": "freelancer_dataminer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "data",
+    "mining"
+  ],
+  "author": "Alec Mather",
+  "license": "ISC",
+  "dependencies": {
+    "cheerio": "^1.0.0-rc.3",
+    "create-html": "^4.1.0",
+    "download-pdf": "^0.1.6",
+    "mkdirp": "^0.5.1",
+    "ora": "^3.4.0",
+    "puppeteer": "^1.18.1",
+    "request": "^2.88.0",
+    "request-promise": "^4.2.4",
+    "string-similarity": "^3.0.0"
+  }
+}
