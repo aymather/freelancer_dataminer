@@ -8,7 +8,7 @@ const mkdirp = require('mkdirp');
 const fs = require('fs');
 const download = require('download');
 
-module.exports = async function scrape(spinner, code, address, current_dir){
+module.exports = async function scrape(range, spinner, code, address, current_dir){
 
     // Wrapper
     try {
@@ -95,10 +95,21 @@ module.exports = async function scrape(spinner, code, address, current_dir){
             return cheerio.load(body);
         }
 
-        // Loop through each application and download documents
-        for([index, app] of app_links.entries()){
+        var total, start;
+        if(range){
+            total = range[1];
+            start = range[0];
+        } else {
+            total = app_links.length;
+            start = 0;
+        }
 
-            spinner.text = `${parseFloat(index / app_links.length) * 100}% complete...`;
+        // Loop through each application and download documents
+        for(let index = start; index <= total; index++){
+
+            let app = app_links[index];
+
+            spinner.text = `${parseFloat(index / total) * 100}% complete...`;
 
             // Set uri to the current application uri
             options.uri = app.link;
@@ -145,6 +156,10 @@ module.exports = async function scrape(spinner, code, address, current_dir){
             Promise.all(pdf_links.map(async link => {
                 download(link, app_dir);
             }))
+            .catch(err => {
+                console.log(app_dir);
+                console.log(pdf_links);
+            })
 
         }
 

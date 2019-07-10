@@ -2,7 +2,8 @@
 
     {
         "code": "SW11 3EL",
-        "address": "Prince Of Wales Drive"
+        "address": "Prince Of Wales Drive",
+        "range": [0, 6]
     }
 
 ]

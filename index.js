@@ -36,7 +36,7 @@ async function main(){
         // Attempt to gather data from current process
         try {
 
-            await scrape(spinner, code, address, path.join(CWD, `/${folder_title}`));
+            await scrape(obj.range, spinner, code, address, path.join(CWD, `/${folder_title}`));
 
         } catch(e) {
             console.log('We got an error.');
