@@ -6,7 +6,7 @@ const ps = require('./puppet_scrape');
 const path = require('path');
 const mkdirp = require('mkdirp');
 const fs = require('fs');
-const download = require('download-pdf');
+const download = require('download');
 
 module.exports = async function scrape(spinner, code, address, current_dir){
 
@@ -96,13 +96,15 @@ module.exports = async function scrape(spinner, code, address, current_dir){
         }
 
         // Loop through each application and download documents
-        for(app of app_links){
+        for([index, app] of app_links.entries()){
+
+            spinner.text = `${parseFloat(index / app_links.length) * 100}% complete...`;
 
             // Set uri to the current application uri
             options.uri = app.link;
             
             // Create a subfolder for this application
-            var app_dir = path.join(current_dir, `/${app.app_number.replace('/','-')}`);
+            var app_dir = path.join(current_dir, `/${app.app_number.replace(/\//g,'-')}`);
             mkdirp(app_dir);
 
             // Make request to application
@@ -131,34 +133,19 @@ module.exports = async function scrape(spinner, code, address, current_dir){
             // Find all the 'Whole Doc' links
             var pdf_obj = $('td a');
             var pdf_links = [];
+            var base = 'https://planning.wandsworth.gov.uk';
             for(let i=0; i<pdf_obj.length; i++){
                 if(pdf_obj[i].children[0].data == 'Whole Doc'){
-                    pdf_links.push(pdf_obj[i].attribs.href);
+                    var raw = pdf_obj[i].attribs.href;
+                    pdf_links.push(`${base}${raw}`.replace(' ', '%20'));
                 }
             }
-            
-            var base = 'https://planning.wandsworth.gov.uk';
-            var it = 0;
-            var dl_options = {
-                filename: null,
-                directory: app_dir
-            }
-            for(link of pdf_links){
-                let pdf_uri = `${base}${link}`.replace(' ', '%20');
-                let pdf_title = `pdf_${it}.pdf`;
-                dl_options.filename = pdf_title;
-                try {
-                    download(pdf_uri, dl_options, (err) => {
-                        if(err) console.log(err);
-                        spinner.text = `Successful download of ${pdf_title}`;
-                    })
-                    it++;
-                } catch(e) {
-                    console.log(e);
-                    console.log(`Error processing ${pdf_uri}`);
-                }
-                
-            }
+
+            // Download all pdfs and place in app directory
+            Promise.all(pdf_links.map(async link => {
+                console.log(link);
+                download(link, app_dir);
+            }))
 
         }
 
