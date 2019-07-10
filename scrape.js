@@ -143,7 +143,6 @@ module.exports = async function scrape(spinner, code, address, current_dir){
 
             // Download all pdfs and place in app directory
             Promise.all(pdf_links.map(async link => {
-                console.log(link);
                 download(link, app_dir);
             }))
 
